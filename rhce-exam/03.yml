@@ -1,0 +1,16 @@
+3. Installing the Collection.
+  i) Create a directory "collections" under the /home/student/ansible.
+  ii) Using the url 'http://content/Rhce/ansible-posix-1.4.0.tar.gz' to install the ansible.posix collection under collection directory.
+  iii) Using the url 'http://content/Rhce/redhat-rhel_system_roles-1.0.0.tar.gz' to install the system roles collection under collection directory.
+
+Note: In Exam, you need to install ansible collections also, 
+
+# mkdir /home/student/ansible/collections
+
+# ansible-galaxy collection install  http://content/Rhce/ansible-posix-1.4.0.tar.gz -p collections
+
+# ansible-galaxy collection install  http://content/Rhce/redhat-rhel_system_roles-1.0.0.tar.gz -p collections
+
+# ls collections/ansible_collections (verify)
+
+# ansible-navigator collections (verify)

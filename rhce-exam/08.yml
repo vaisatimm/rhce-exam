@@ -1,0 +1,38 @@
+8. Install packages in multiple group.
+
+  i)   Install vsftpd and mariadb-server packages in dev and test group.
+  ii)  Install "RPM Development Tools" group package in prod group.
+  iii) Update all packages in dev group.
+  iv)  Use separate play for each task and playbook name should be packages.yml.
+
+# vim packages.yml
+---
+- name: package installation
+  hosts: dev,test
+  tasks:
+  - name: installing php and mariadb-server
+    ansible.builtin.dnf:
+      name:
+        - vsftpd
+        - mariadb-server
+      state: present 
+- name: group package installation
+  hosts: prod
+  tasks:
+  - name: installing group package 'Development tools'
+    ansible.builtin.dnf:
+      name: '@RPM Development Tools' #(in exam @RPM Development Tools)
+      state: present
+- name: update packages 
+  hosts: dev
+  tasks:
+  - name: updating all 
+    ansible.builtin.dnf:
+      name: '*'
+      state: latest
+
+# ansible-navigator run packages.yml -m stdout
+
+# ansible dev -m command -a 'yum list installed |grep vsftpd'       #(Verify the output)
+
+# ansible prod -m command -a 'yum group list'       #(Verify the output)

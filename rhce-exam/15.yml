@@ -1,0 +1,11 @@
+15. Rekey the variable file from http://content.example.com/Rhce/solaris.yml.
+
+  i)  Old password: cisco
+  ii) New password: redhat
+
+# wget http://content/Rhce/solaris.yml
+
+# ansible-vault rekey solaris.yml
+Old password: 
+New password: 
+Confirm new password:

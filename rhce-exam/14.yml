@@ -1,0 +1,61 @@
+14. Download the variable file http://content.example.com/Rhce/user_list.yml and 
+    Playbook name users.yml and run in all nodes using two variable files user_list.yml and vault.yml
+  i)  * Create a group opsdev
+      * Create user from users variable who's job is equal to developer and need to be in opsdev group
+      * Assign a password using SHA512 format and run the playbook on dev and test.
+      * User password is {{ pw_developer }}
+  ii) * Create a group opsmgr
+      * Create user from users variable who's job is equal to manager and need to be in opsmgr group
+      * Assign a password using SHA512 format and run the playbook on test.
+      * User password is {{ pw_manager }}
+  iii)* Use when condition for each play.
+
+# wget http://content.example.com/Rhce/user_list.yml
+
+# vim users.yml
+---
+- name: Create an users and groups
+  hosts: all
+  vars_files:
+    - user_list.yml
+    - vault.yml
+  tasks:
+  - name: Create group 1
+    ansible.builtin.group:
+      name: opsdev
+      state: present
+    when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test']
+  - name: Create group 2
+    ansible.builtin.group:
+      name: opsmgr
+      state: present
+    when: inventory_hostname in groups['test']
+  - name: User create 1
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      uid: "{{ item.uid }}"
+      password: "{{ pw_developer | password_hash('sha512') }}"
+      password_expire_max: "{{ item.password_expire_days }}"
+      groups: opsdev
+      state: present
+    loop:
+      "{{ users }}"
+    when: item.job == "developer" and  (inventory_hostname in groups['dev'] or inventory_hostname in groups['test'])
+  - name: user create 2
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      uid: "{{ item.uid }}"
+      password: "{{ pw_manager | password_hash('sha512') }}"
+      password_expire_max: "{{ item.password_expire_days }}"
+      groups: opsmgr
+      state: present
+    loop:
+      "{{ users }}"
+    when: item.job == "manager" and inventory_hostname in groups['test']
+
+
+# ansible-navigator run users.yml --vault-password-file=secret.txt -m stdout
+
+# ansible dev  -m command -a 'tail /etc/group'       #(verify the output)
+
+# ansible test -m command -a 'tail /etc/group'       #(verify the output)

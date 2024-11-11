@@ -1,0 +1,11 @@
+#172.31.112.225
+[dev]
+servera ansible_host=172.31.119.201
+[test]
+serverb ansible_host=172.31.115.9
+[prod]
+serverc ansible_host=172.31.125.127
+[balancers]
+serverd ansible_host=172.31.124.172
+[webservers:children]
+prod

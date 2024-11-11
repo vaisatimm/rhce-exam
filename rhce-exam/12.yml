@@ -1,0 +1,47 @@
+12. Download the file http://content.example.com/Rhce/myhosts.j2.
+
+  i) myhosts.j2 is having the content.
+
+  127.0.0.1 localhost.localdomain localhost
+  192.168.0.1 localhost.localdomain localhost
+
+  ii) The file should collect all node information like ipaddress,fqdn,hostname 
+      and it should be the same as in the /etc/hosts file,
+      if playbook run in all the managed node it must store in /etc/myhosts.
+
+  Finally /etc/myhosts file should contains like.
+
+  127.0.0.1 localhost.localdomain localhost
+  192.168.0.1 localhost.localdomain localhost
+
+  172.25.250.10 servera.lab.example.com servera
+  172.25.250.11 serverb.lab.example.com serverb
+  172.25.250.12 serverc.lab.example.com serverc
+  172.25.250.13 serverd.lab.example.com serverd
+
+  iii) playbook name hosts.yml and run in dev group.
+
+# wget http://content.example.com/Rhce/myhosts.j2
+
+# vim /home/student/ansible/myhosts.j2
+
+last line:
+{% for host in groups['all'] %}
+{{hostvars[host] ['ansible_facts'] ['default_ipv4'] ['address']}} {{hostvars[host] ['ansible_facts'] ['fqdn']}} {{hostvars[host] ['ansible_facts'] ['hostname']}}
+{% endfor %}
+
+# vim hosts.yml
+---
+- name: Collect the all node information
+  hosts: all
+  tasks:
+  - name: copy the template to the managed node
+    ansible.builtin.template:
+      src: myhosts.j2
+      dest: /etc/myhosts  
+    when: inventory_hostname in groups['dev']
+
+# ansible-navigator run hosts.yml -m stdout 
+
+# ansible dev -m command -a 'cat /etc/myhosts'     #(Verify the output)
+

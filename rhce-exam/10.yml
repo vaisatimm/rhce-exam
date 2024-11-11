@@ -1,0 +1,59 @@
+10. Collect hardware report using playbook in all nodes.
+
+  i)  Download hwreport.txt from the url http://content.example.com/Rhce/hwreport.txt and save it under /root.
+
+  /root/hwreport.txt should have the content with node informations as key=value.
+  #hwreport
+  HOSTNAME=
+  MEMORY=
+  BIOS=
+  CPU=
+  DISK_SIZE_VDA=
+  DISK_SIZE_VDB=
+
+  ii)  If there is no information it have to show "NONE".
+  iii) playbook name should be hwreport.yml.
+ 
+__________________________________________________________________________________________________________________________
+
+Note: Copy the url "http://content.example.com/Rhce/hwreport.txt" and paste that on new tab and verify the content in it.
+__________________________________________________________________________________________________________________________
+
+
+# ansible all -m command -a 'lsblk'             #(Verify the vdb disk exists) 
+
+# vim /home/student/ansible/hwreport.yml
+---
+- name: hwreport
+  hosts: all
+  ignore_errors: yes
+  tasks:
+  - name: Download the file
+    ansible.builtin.get_url:
+      url: "http://content.example.com/Rhce/hwreport.txt"
+      dest: /root/hwreport.txt
+  - name: Collect report 1
+    ansible.builtin.set_fact:
+      HOSTNAME: "{{ ansible_hostname }}"
+      MEMORY: "{{ ansible_memtotal_mb  }}"
+      BIOS: "{{ ansible_bios_version }}"
+      CPU: "{{ ansible_processor }}"
+      DISK_SIZE_VDA: "{{ ansible_devices['vda']['size'] }}"
+  - name: Collect report 2
+    ansible.builtin.set_fact:
+      DISK_SIZE_VDB: "{{ ansible_devices['vdb']['size'] }}"
+  - name: Copy the content to the managed node
+    ansible.builtin.copy:
+      content:  |
+        #hwreport
+        HOSTNAME={{ HOSTNAME | default('NONE') }}
+        MEMORY={{ MEMORY | default('NONE') }}
+        BIOS={{ BIOS  | default('NONE') }}
+        CPU={{ CPU | default('NONE') }}
+        DISK_SIZE_VDA={{ DISK_SIZE_VDA | default('NONE') }}
+        DISK_SIZE_VDB={{ DISK_SIZE_VDB | default('NONE') }}
+      dest: /root/hwreport.txt
+
+# ansible-navigator run  hwreport.yml -m stdout 
+
+# ansible all -m command -a 'cat /root/hwreport.txt'     #(Verify the output)

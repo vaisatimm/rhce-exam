@@ -1,0 +1,42 @@
+7.1 Create a playbook name timesync.yml and use system roles
+
+  i)  Use ntp server 172.25.254.254 and enable iburst.
+  ii) Run this playbook on all the managed nodes. 
+
+# cp -rvf /home/student/ansible/collections/ansible_collections/redhat/rhel_system_roles/roles/* /home/student/roles/
+
+# vim timesync.yml
+---
+- name: Using the timesync roles
+  hosts: all
+  vars:
+    timesync_ntp_servers:
+      - hostname: 172.25.254.254
+        iburst: yes
+  roles:
+    - timesync
+
+# ansible servera.lab.example.com -m command -a 'cat /etc/chrony.conf'    #(Pre verify the chrony file)
+
+# ansible-navigator run timesync.yml -m stdout
+
+# ansible servera.lab.example.com -m command -a 'cat /etc/chrony.conf'    #(Verify the ouput)
+
+7.2 Create a playbook name selinux.yml and use system roles
+  i) Set selinux mode as enforcing in all manage node 
+ 
+# cp -rvf /home/student/ansible/collections/ansible_collections/redhat/rhel_system_roles/roles/* /home/student/roles/
+
+# vim selinux.yml
+---
+- name: Configure selinux as enforcing mode
+  hosts: all
+  vars:
+    - selinux_state: enforcing 
+  roles:
+    - selinux
+
+# ansible-navigator run selinux.yml -m stdout 
+
+# ansible all -m command -a "cat /etc/selinux/config"
+

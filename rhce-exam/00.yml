@@ -1,0 +1,31 @@
+                                        RHEL-9 RHCE EXAM MODEL PAPER
+                                                EX294
+                                                                                        Duration: 4Hrs
+                                                                                        Total Marks: 300
+
+Instructions:
+
+control node: 	workstaion.lab.example.com 
+
+managed node: 	servera.lab.example.com,
+		serverb.lab.example.com,
+		serverc.lab.example.com,
+		serverd.lab.example.com
+
+* All node root password is 'redhat' and Ansible control node user name is student.
+
+* Create a directory 'ansible' under the path /home/student and all the playbook should be under /home/student/ansible.
+
+* All playbook should be owned/executed by student and Ansible managed node user name is devops.
+
+* Ansible control node user password is student
+
+* Unless advised  password should be 'redhat' for all users 
+
+Ansible Automation Platform 2.2 is utility.lab.example.com
+Cridentials are admin, redhat 
+
+Note: In Exam, If they not given the Managed node user use the control node user as remote user
+___________________________________________________________________________________________________________
+
+# ssh student@workstation

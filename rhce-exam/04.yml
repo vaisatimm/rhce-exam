@@ -1,0 +1,16 @@
+4. installing the roles.
+  i) Create a directory 'roles' under /home/student/ansible
+  ii) Create a playbook called requirements.yml under the roles directory and download the given roles under the 'roles' directory using galaxy command under it.
+  iii)  Role name should be balancer and download using this url http://content.example.com/Rhce/balancer.tgz.
+  iv) Role name phpinfo and download using this url http://content.example.com/Rhce/phpinfo.tgz.
+
+# mkdir /home/student/ansible/roles
+
+# vim /home/student/ansible/roles/requirements.yml
+---
+- src: http://content.example.com/Rhce/balancer.tar.gz
+  name: balancer
+- src: http://content.example.com/Rhce/phpinfo.tar.gz
+  name: phpinfo
+
+# ansible-galaxy install -r /home/student/ansible/roles/requirements.yml -p /home/student/ansible/roles

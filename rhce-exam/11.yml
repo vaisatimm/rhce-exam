@@ -1,0 +1,31 @@
+11. Replace the file /etc/issue on all managed nodes.
+
+  i)   In dev  group /etc/issue should have the content "Developement".
+  ii)  In test group /etc/issue should have the content "Test".
+  iii) In prod group /etc/issue should have the content "Production".
+  iv)  Playbook name issue.yml and run in all managed nodes.
+
+# vim /home/student/ansible/issue.yml
+---
+- name: play for replace module
+  hosts: all
+  tasks:
+  - name: replace the content in dev group
+    ansible.builtin.copy:
+      content: Development
+      dest: /etc/issue 
+    when: inventory_hostname in groups['dev']
+  - name: replace the content in test group
+    ansible.builtin.copy:
+      content: Test
+      dest: /etc/issue  
+    when: inventory_hostname in groups['test']
+  - name: replace the content in prod group
+    ansible.builtin.copy:
+      content: Production
+      dest: /etc/issue  
+    when: inventory_hostname in groups['prod']
+
+# ansible-navigator run issue.yml --diff -m stdout
+
+# ansible all -m command -a 'cat /etc/issue'

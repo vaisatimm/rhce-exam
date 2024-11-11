@@ -1,0 +1,31 @@
+16. Create a cronjob for user student in all nodes, the playbook name crontab.yml and the job details are below
+  i) Every 2 minutes the job will execute logger  "EX294 in progress"
+
+# vim crontab.yml
+---
+- name : Create a cronjob
+  hosts: all
+  tasks:
+  - name: Cronjob for logger
+    ansible.builtin.cron:
+      name: Create logger
+      user: student
+      minute: "*/2"
+      job: logger "EX294 in progress"
+      state: present
+
+# ansible-navigator run crontab.yml -m stdout
+
+# ansible all -m command -a "ls /var/spool/cron/"
+
+# ansible all -m command -a "crontab -lu student"
+
+17. Create a logical volume named data of 1500M size from the volume group research 
+     and if 1500M size is not created, then atleast it should create 800M size.
+
+  i)   Verify if vg not exist, then it should debug msg "vg not found" .
+  ii)  1500M lv size is not created, then it should debug msg "Insufficient size of vg" .
+  iii) If Logical volume is created, then assign file system as "ext3" .
+  iv)  Do not perform any mounting for this LV.
+  iv)  The playbook name lvm.yml and run the playbook in all nodes.
+______________________________________________________________________

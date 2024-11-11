@@ -1,0 +1,55 @@
+5. Create offline role named apache under roles directory.
+
+  i)   Install httpd package and the service should be start and enable the httpd service.
+  ii)  Host the web page using the template.j2
+  iii) The template.j2 should contain i
+       My host is  HOSTNAME  on IPADDRESS
+       Where HOSTNAME is fully qualified domain name.
+  iv)  Create a playbook named apache_role.yml and run the role in dev group.
+
+# ansible-galaxy init /home/student/ansible/roles/apache 
+
+# vim /home/student/ansible/roles/apache/templates/template.j2
+My host is {{ ansible_fqdn }} on {{ ansible_default_ipv4.address }}
+				(or)
+My host is {{ ansible_facts['fqdn'] }} on {{ ansible_facts['default_ipv4']['address'] }}
+
+# vim /home/student/ansible/roles/apache/tasks/main.yml 
+- name: Install httpd package
+  ansible.builtin.dnf:
+    name: 
+      - httpd
+      - firewalld
+    state: present
+- name: start service httpd
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: yes
+- name: start service firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: yes
+- name: Add http service in firewall rule
+  ansible.posix.firewalld:
+    service: http
+    state: enabled
+    permanent: yes
+    immediate: yes
+- name: Copy the template.j2 file to web server directory
+  ansible.builtin.template:
+    src: template.j2
+    dest: /var/www/html/index.html
+
+# vim /home/student/ansible/apache_role.yml
+---
+- name: apache deploy
+  hosts: dev
+  roles:
+    - apache
+
+# ansible-navigator run apache_role.yml -m stdout
+
+# curl http://servera.lab.example.com     #(Verify the output)
+

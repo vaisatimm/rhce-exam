@@ -1,0 +1,54 @@
+1. Install and Configure Ansible on the control node as follows:
+
+  * Install the required packages.
+  * Create a static inventory file called /home/student/ansible/inventory as follows:
+          -- servera.lab.example.com is a member of the dev host group
+          -- serverb.lab.example.com is a member of the test host group
+          -- serverc.lab.example.com is a member of the prod host group
+          -- serverd.lab.example.com is a member of the balancers host group
+          -- The prod group is a member of the webservers host group
+  * Create a configuration file called ansible.cfg as follows:
+          -- The host inventory file /home/student/ansible/inventory is defined
+          -- The location of roles used in playbooks is defined as /home/student/ansible/roles
+          -- The location of collections used in playbooks is defined as /home/student/ansible/collections
+
+# sudo yum install ansible-navigator ansible tree vim -y (In Exam it will work)
+
+podman login utility.lab.example.com
+username: admin
+password: redhat
+
+# vim /home/student/.vimrc
+ set ai ts=2 et cursorcolumn
+
+# source /home/student/.vimrc
+
+# mkdir /home/student/ansible
+# cd /home/student/ansible
+
+# vim /home/student/ansible/inventory
+
+[dev]
+servera.lab.example.com
+[test]
+serverb.lab.example.com
+[prod]
+serverc.lab.example.com
+[balancers]
+serverd.lab.example.com
+[webservers:children]
+prod
+
+# vim /home/student/ansible/ansible.cfg
+
+[defaults]
+remote_user=devops
+inventory=/home/student/ansible/inventory
+roles_path=/home/student/ansible/roles
+collections_paths=/home/student/ansible/collections
+
+[privilege_escalation]
+become=true
+
+# ansible all -m command -a 'id'
+(you should get the root user as output)

@@ -1,0 +1,37 @@
+		#Not for Exam# To create volume group "research"
+
+# wget http://content/Rhce/initialscripts.sh  
+
+# chmod +x  initialscripts.sh 
+ 
+# sh initialscripts.sh 
+__________________________________________________________________________________________________________
+
+- name: Creating LVM storage
+  hosts: all
+  ignore_errors: yes 
+  tasks: 
+   - name: Check Volume group is present
+     ansible.builtin.command: vgdisplay research
+     register: vginfo 
+   - ansible.builtin.debug:
+      msg: "vg not found"
+     when: vginfo is failed
+   - name: Creating LVM in 1500 MB 
+     ansible.builtin.command: 'lvcreate -L 1500M -n data research'
+     when: vginfo is success
+     register: lv1
+   - ansible.builtin.debug:
+      msg: "Insufficient size of vg"
+     when: lv1 is failed
+   - name: Create LVM in 800 MB 
+     ansible.builtin.command: 'lvcreate -L 800M -n data research'
+     when: lv1 is failed
+   - name: Assign filesystem as ext3
+     ansible.builtin.command: 'mkfs.ext3 /dev/research/data'
+
+# ansible-navigator run lvm.yml -m stdout
+
+# ansible all -m command -a 'lsblk'
+
+# ansible all -m command -a 'lsblk -fp'

@@ -1,0 +1,37 @@
+9. Create a playbook webcontent.yml and it should run on dev group.
+
+  i)   Create a directory /devweb and it should be owned by devops group.
+  ii)  /devweb directory should have context type as "httpd" 
+  iii) Assign the permission for user=rwx,group=rwx,others=rx and group special permission should be applied to /devweb.
+  iv)  Create an index.html file under /devweb directory and the file should have the content "Developement".
+   v)  Link the /devweb directory to /var/www/html/devweb. 
+
+# vim /home/student/ansible/webcontent.yml
+---
+- name: create a link 
+  hosts: dev
+  tasks:
+  - name: create a directory
+    ansible.builtin.file: 
+      path: /devweb
+      state: directory
+      group: devops
+      mode: '02775'
+      setype: httpd_sys_content_t 
+  - name: create a file
+    ansible.builtin.file:
+      path: /devweb/index.html
+      state: touch
+  - name: copy the contents to index.html
+    ansible.builtin.copy:
+      content: "Development\n"
+      dest: /devweb/index.html 
+  - name: link the directory 
+    ansible.builtin.file:
+      src: /devweb
+      dest: /var/www/html/devweb
+      state: link
+      
+# ansible-navigator run  webcontent.yml -m stdout 
+
+# curl http://servera.lab.example.com/devweb/         #(Verify the output)
